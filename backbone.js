@@ -258,7 +258,7 @@
         if (success) success(model, resp);
       };
       options.error = wrapError(options.error, model, options);
-      (this.sync || Backbone.sync)('read', this, options);
+      (this.sync || getSyncMethod(this.collection) || Backbone.sync)('read', this, options);
       return this;
     },
 
@@ -276,7 +276,7 @@
       };
       options.error = wrapError(options.error, model, options);
       var method = this.isNew() ? 'create' : 'update';
-      (this.sync || Backbone.sync)(method, this, options);
+      (this.sync || getSyncMethod(this.collection) || Backbone.sync)(method, this, options);
       return this;
     },
 
@@ -291,7 +291,7 @@
         if (success) success(model, resp);
       };
       options.error = wrapError(options.error, model, options);
-      (this.sync || Backbone.sync)('delete', this, options);
+      (this.sync || getSyncMethod(this.collection) || Backbone.sync)('delete', this, options);
       return this;
     },
 
@@ -1040,6 +1040,12 @@
   var getUrl = function(object) {
     if (!(object && object.url)) return null;
     return _.isFunction(object.url) ? object.url() : object.url;
+  };
+
+  // Helper function to check an object for the sync method
+  var getSyncMethod = function(object) {
+    if (!(object && object.sync)) return null;
+    return object.sync;
   };
 
   // Throw an error when a URL is needed, and none is supplied.
